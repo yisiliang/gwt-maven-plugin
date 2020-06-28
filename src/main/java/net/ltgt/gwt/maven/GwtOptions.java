@@ -7,11 +7,12 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.util.StringUtils;
 
 public interface GwtOptions {
 
   class CommandlineBuilder {
-    public static List<String> buildArgs(Log log, GwtOptions options) {
+    public static List<String> buildArgs(Log log, GwtOptions options, String gwtVersion) {
       List<String> args = new ArrayList<>();
       if (options.getLogLevel() != null) {
         args.add("-logLevel");
@@ -21,8 +22,11 @@ public interface GwtOptions {
       args.add(options.getWarDir().getAbsolutePath());
       args.add("-workDir");
       args.add(options.getWorkDir().getAbsolutePath());
-      args.add("-deploy");
-      args.add(options.getDeployDir().getAbsolutePath());
+      if (!(StringUtils.isNotBlank(gwtVersion)
+              && (gwtVersion.startsWith("1.") || gwtVersion.startsWith("2.1.") || gwtVersion.startsWith("2.0.")))) {
+        args.add("-deploy");
+        args.add(options.getDeployDir().getAbsolutePath());
+      }
       if (options.getExtraDir() != null) {
         args.add("-extra");
         args.add(options.getExtraDir().getAbsolutePath());

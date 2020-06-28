@@ -142,7 +142,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
       if (codeServerPort > 0) {
         sb.append(" -codeServerPort ").append(codeServerPort);
       }
-      for (String arg : CommandlineBuilder.buildArgs(getLog(), this)) {
+      for (String arg : CommandlineBuilder.buildArgs(getLog(), this, null)) {
         sb.append(" ").append(quote(arg));
       }
       sb.append(effectiveIsEnableAssertions() ? " -checkAssertions" : " -nocheckAssertions");

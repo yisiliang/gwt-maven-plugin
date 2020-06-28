@@ -14,6 +14,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -205,7 +206,8 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
       }
     }
     args.add("com.google.gwt.dev.Compiler");
-    args.addAll(CommandlineBuilder.buildArgs(getLog(), this));
+    String gwtVersion = getGwtVersion(project.getDependencies());
+    args.addAll(CommandlineBuilder.buildArgs(getLog(), this, gwtVersion));
     if (failOnError != null) {
       args.add(failOnError ? "-failOnError" : "-nofailOnError");
     }
@@ -231,6 +233,15 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
       final File nocacheJs = new File(webappDirectory, shortName + File.separator + shortName + ".nocache.js");
       nocacheJs.setLastModified(System.currentTimeMillis());
     }
+  }
+
+  private String getGwtVersion(List<Dependency> dependencies) {
+    for (Dependency dependency:dependencies) {
+      if (StringUtils.equals(dependency.getGroupId(), "com.google.gwt") && StringUtils.equals(dependency.getArtifactId(), "gwt-dev")){
+        return dependency.getVersion();
+      }
+    }
+    return "";
   }
 
   private boolean isStale(List<String> sourceRoots) throws MojoExecutionException {
